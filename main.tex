@@ -10,6 +10,7 @@
 % ---
 % Pacotes básicos 
 % ---
+\usepackage{xcolor, listings}
 \usepackage{fontspec}
 \usepackage{longtable}
 \setmainfont{Arial}
@@ -24,6 +25,14 @@
 \usepackage{float}
 \usepackage{slashbox}
 % ---
+\lstset{language=SQL,
+		keywordstyle=\color{blue},
+           showspaces=false,
+           basicstyle=\ttfamily,
+           numbers=left,
+           numberstyle=\tiny,
+           commentstyle=\color{gray}
+}
 
 % ---
 % Pacotes de citações
@@ -153,7 +162,7 @@
 
  \begin{center}
 
-{\large { Maio / 2017 \\Bancos de Dados e Engenharia de Software II e WEB } \\
+{\large { 01/06/2017 \\Bancos de Dados e Engenharia de Software II e WEB } \\
 Profª Drª Sahudy Montenegro González\\
 Profª Drª Luciana Zaina \\
 Profº Drº Alexandre Álvaro} 
@@ -195,17 +204,17 @@ Profº Drº Alexandre Álvaro}
 % ----------------------------------------------------------
 % Apresentamos o texto
 % ----------------------------------------------------------
-\chapter{Escopo}
+\chapter{Especificação de Consultas SQL}
 \section{Objetivo}
-	Neste documento será descrito o gerenciamento do projeto cujo o objetivo é desenvolver uma aplicação web que realiza consultas sob uma simulação da base de dados do IMDb (Internet Movie Database), que é uma coleção de informações de filmes disponível na web.
+	Neste documento será descrito o processo de análise, normalização, indexação e otimização do banco de dados, tendo como objetivo responder questões centrais sobre decisões tomadas em relação ao processo de implementação do banco de dados referente a aplicação a ser desenvolvida.
     
     
    A aplicação possibilitará buscas avançadas de atores, que incluem o nome, intervalo de anos ou ano específico de filmes em que trabalhou, sexo e nome do personagem e também em quais filmes o ator X e o ator Y trabalharam juntos. 
    
    
-   Além disso, constam neste documento o escopo do produto, EAP (Estrutura Analítica do Projeto), cronograma e plano de risco. 
+   Além disso, constam neste documento o script contendo todos os códigos em SQL utilizados para a criação e manipulação do banco de dados, separados conforme os tópicos abrangidos nas seções e capítulos subsequentes.
    
-\section{Descrição}
+\section{Descrição das Consultas}
 O sistema a ser desenvolvido será uma aplicação Web capaz de realizar consultas relacionadas a base de dados do IMBb, para isso, também contará com um sistema de paginação para possibilitar a exibição dos dados a serem retornados. Portanto, o sistema será composto por duas consultas principais:
  
 \begin{itemize}
@@ -220,84 +229,27 @@ O sistema a ser desenvolvido será uma aplicação Web capaz de realizar consult
 
 Todas as consultas citadas retornarão algumas informações relacionadas aos atores, contendo título e ano do filme em que contracenaram, nome e sexo do ator, assim como o nome do personagem que este realizou. Outrossim, a consulta 2 será ordenada lexicograficamente pelos nomes dos atores.
 
-\chapter{Requisitos}
-\section{Funcionais}
-RF1: O sistema deverá permitir a consulta de ator por nome, sendo esta uma busca absoluta, e intervalo de anos em que este trabalhou.
-
-RF2: O sistema deverá permitir a consulta de atores por sexo, nome de personagem, sendo esta uma busca relativa, e ano específico de filme.
-
-RF3: O sistema deverá permitir a consulta que correlaciona dois atores e retorne os filmes em que estes trabalharam juntos.
-
-RF4: O sistema deverá exibir o resultado da consulta, referente ao requisito funcional 3, em forma de lista
-ordenada lexicograficamente por nome dos atores.
 
 
-\section{Não-Funcionais}
+\chapter{Normalização do Banco de Dados}
 
-RNF1: O sistema será desenvolvido na linguagem de programação \textit{Java}.
+Inicialmente, o Banco de Dados contendo dados do IMBd era composto por apenas uma tabela, movies. Esta não continha chaves primárias, chaves secundárias. E apresentava as seguintes colunas: 
 
-RNF2: O sistema deverá ser compatível com o navegador \textit{Chrome}.
+\begin{lstlisting}
+CREATE TABLE public.movies(
+  movieid integer,
+  title character varying(400),
+  mvyear character varying(100),
+  actorid integer,
+  actorname character varying(250),
+  sex character(1),
+  as_character character varying(1000))
+\end{lstlisting}
 
-RNF3: O SGDB usado deve ser o 
-\textit{PostgreSQL}.
-
-RNF4: A interface gráfica deverá ser implementada em \textit{HTML} e \textit{CSS}.
-
-\chapter{EAP}
-\section{Dicionário}
-\textbf{Escopo:} Descreve os processos necessários para se alcançar os resultados esperados no desenvolvimento do projeto.
-
-\textbf{EAP:} Estrutura Analítica de Projetos ou em inglês WBS (Work Breakdown Structure) é utilizada para evidenciar as entregas do projeto, o que auxuliará na gestão do escopo do projeto. 
-
-\textbf{MVC:} Model-view-controller é um padrão de arquitetura de software (design pattern) que separa a aplicação em 3 camadas. A camada de interação do usuário(view), a camada de manipulação dos dados(model) e a camada de controle(controller).
-
-\section{Diagrama}
-\begin{figure}[htb]
-%\centering
-\includegraphics[width=1.05\textwidth]{diagrama.png}\
-\caption{\label{fig: diagrama}Diagrama EAP}
-\end{figure}
-
-\chapter{Cronograma}
-A seguir será apresentado o cronograma com as estimativas de datas para realizar as atividades a serem entregues.
+Devido a descrição do problema, especificação na seção 1.2, o grupo optou por eliminar colunas que não eram relevantes ao domínio do problema. Assim, para que o Banco de Dados seguisse as 3 formas normais,  
 
 
-\begin{figure}[htb]
-%\centering
-\includegraphics[width=1.05\textwidth]{Cronograma.jpg}\
-\caption{\label{fig: cronograma}Cronograma de Atividades}
-\end{figure}
-
-\chapter{Plano de Riscos}
-\section{Identificação dos Riscos}
- 
-\begin{center}
-\begin{tabular}{|l|*{4}{c|}}\hline
-\makebox[3em]{\textbf{Risco}}&\makebox[5em]{\textbf{Descrição}}&\makebox[8em]{\textbf{Probabilidade}}&\makebox[5em]{\textbf{Impacto}}\\\hline\hline
-
-1 & Mudança de requisitos & Alta & Moderado\\\hline
-2 & Mudança de escopo & Baixa & Alto \\\hline
-3 & Escassez de tempo & Média & Moderado \\\hline
-4 & Inexperiência da equipe & Média & Alto \\\hline
-5 & Dificuldades com ferramentas & Alta & Moderado \\\hline
-6 & Sobrecarga de trabalho & Baixa & Moderado \\\hline
-\end{tabular}
-\end{center}
-
-\section{Monitoramento e Controle de Riscos}
-\begin{center}
-\begin{tabular}{|l|*{4}{c|}}\hline
-\makebox[3em]{\textbf{Risco}}&\makebox[5em]{\textbf{Monitoramento}}&\makebox[10em]{\textbf{Medidas para Controle}}\\\hline\hline
-
-1 & Reuniões com os docentes envolvidos & Validação ou remoção do requisito em questão
-\\\hline
-2 & Reuniões com os docentes envolvidos & Negociação em relação à mudança \\\hline
-3 & Análise do cronograma em relação ao  &Reavaliar cronograma ou adiantar tarefas \\ 	& estado do projeto &   \\\hline
-4 e 5 & Reunião com a equipe para identificar & Procurar tutoriais e monitorias\\& as dificuldades& \\\hline
-6 & Reavaliar cronograma & Realivar divisão de trabalho entre os\\& & membros da equipe \\\hline
-\end{tabular}
-\end{center}
-
+\chapter{Técnicas de Acesso Eficiente ao BD}
 
 % Referências bibliográficas
 % ---------------------------------------------------------
